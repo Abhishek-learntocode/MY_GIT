@@ -43,7 +43,7 @@ std::string getParentCommit() {
 }
 
 void commit(int argc, char* argv[]) {
-    // --- We keep the try-catch block from the feature branch ---
+    // --- Safe version with try-catch ---
     try {
         if (argc < 3) {
             std::cerr << "Usage: ./mygit commit <message>" << std::endl;
