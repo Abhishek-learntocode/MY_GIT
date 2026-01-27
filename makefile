@@ -2,11 +2,11 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -Wall -Iinclude
 
-# Libraries (Installed via MSYS2)
+# Libraries
 LDFLAGS = -lssl -lcrypto -lz
 
-# Source Files
-SRC = src/main.cpp src/commands/init.cpp
+# Source Files (Updated)
+SRC = src/main.cpp src/commands/init.cpp src/commands/hash_object.cpp src/utils.cpp
 OBJ = $(SRC:.cpp=.o)
 
 # Output Binary Name
@@ -23,10 +23,10 @@ $(TARGET): $(OBJ)
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-# Clean Rule (Detects Windows vs Linux automatically)
+# Clean Rule
 clean:
 ifeq ($(OS),Windows_NT)
-	del /Q /F src\*.o src\commands\*.o mygit.exe
+	del /Q /F src\*.o src\commands\*.o src\utils.o mygit.exe
 	rmdir /S /Q .mygit 2>NUL || echo ""
 else
 	rm -f $(OBJ) $(TARGET)
