@@ -9,24 +9,27 @@
 namespace fs = std::filesystem;
 
 std::string createTree() {
-    // ... (Keep existing createTree logic) ...
     Index index;
     std::string treeContent = "";
+    
+    // Convert Index list to Tree format: "100644 blob <sha1> <filename>"
     for (const auto& [name, sha] : index.getEntries()) {
         treeContent += "100644 blob " + sha + " " + name + "\n";
     }
+
     std::string header = "tree " + std::to_string(treeContent.size()) + '\0';
     std::string store = header + treeContent;
     std::string treeSha = computeSHA1(store);
+
     writeToFile(getObjectPath(treeSha), compressData(store));
     return treeSha;
 }
 
 std::string getParentCommit() {
-    // ... (Keep existing getParentCommit logic) ...
     fs::path headPath = findGitRoot() / "HEAD";
     std::string headContent = readFile(headPath);
     
+    // HEAD usually contains "ref: refs/heads/main\n"
     if (headContent.find("ref: ") == 0) {
         std::string refPath = headContent.substr(5);
         if (!refPath.empty() && refPath.back() == '\n') refPath.pop_back();
@@ -36,11 +39,11 @@ std::string getParentCommit() {
             return readFile(branchPath);
         }
     }
-    return "";
+    return ""; // First commit has no parent
 }
 
 void commit(int argc, char* argv[]) {
-    // --- ADD TRY CATCH HERE ---
+    // --- We keep the try-catch block from the feature branch ---
     try {
         if (argc < 3) {
             std::cerr << "Usage: ./mygit commit <message>" << std::endl;
@@ -48,9 +51,12 @@ void commit(int argc, char* argv[]) {
         }
         std::string message = argv[2];
 
+        // 1. Create Tree
         std::string treeSha = createTree();
+        // 2. Get Parent
         std::string parentSha = getParentCommit();
 
+        // 3. Build Commit Content
         std::stringstream commitData;
         commitData << "tree " << treeSha << "\n";
         if (!parentSha.empty()) commitData << "parent " << parentSha << "\n";
@@ -65,8 +71,10 @@ void commit(int argc, char* argv[]) {
         std::string store = header + content;
         std::string commitSha = computeSHA1(store);
 
+        // 4. Write Commit Object
         writeToFile(getObjectPath(commitSha), compressData(store));
 
+        // 5. Update HEAD (Move the branch pointer)
         fs::path headPath = findGitRoot() / "HEAD";
         std::string refPath = readFile(headPath).substr(5);
         if (!refPath.empty() && refPath.back() == '\n') refPath.pop_back();
