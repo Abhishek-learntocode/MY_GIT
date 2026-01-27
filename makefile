@@ -18,7 +18,7 @@ LDFLAGS = $(LIB_DIRS) -lssl -lcrypto -lz
 SRC = src/main.cpp src/utils.cpp src/index.cpp \
       src/commands/init.cpp src/commands/hash_object.cpp \
       src/commands/cat_file.cpp src/commands/commit.cpp \
-      src/commands/log.cpp src/commands/add.cpp
+      src/commands/log.cpp src/commands/add.cpp src/commands/status.cpp
 OBJ = $(SRC:.cpp=.o)
 
 # Output Binary

@@ -8,5 +8,6 @@ void catFile(int argc, char* argv[]);
 void commit(int argc, char* argv[]);
 void log(int argc, char* argv[]);
 void add(int argc, char* argv[]);
+void status(int argc, char* argv[]);
 
 #endif

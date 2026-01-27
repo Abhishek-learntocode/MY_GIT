@@ -30,6 +30,9 @@ int main(int argc, char* argv[]) {
     else if (command == "add") {
         add(argc, argv);
     }
+    else if (command == "status") {
+        status(argc, argv);
+    }
     // --- NEW LINES END HERE ---
     else {
         std::cerr << "Unknown command: " << command << std::endl;
