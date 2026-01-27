@@ -43,41 +43,47 @@ std::string getParentCommit() {
 }
 
 void commit(int argc, char* argv[]) {
-    if (argc < 3) {
-        std::cerr << "Usage: ./mygit commit <message>" << std::endl;
-        return;
+    // --- Safe version with try-catch ---
+    try {
+        if (argc < 3) {
+            std::cerr << "Usage: ./mygit commit <message>" << std::endl;
+            return;
+        }
+        std::string message = argv[2];
+
+        // 1. Create Tree
+        std::string treeSha = createTree();
+        // 2. Get Parent
+        std::string parentSha = getParentCommit();
+
+        // 3. Build Commit Content
+        std::stringstream commitData;
+        commitData << "tree " << treeSha << "\n";
+        if (!parentSha.empty()) commitData << "parent " << parentSha << "\n";
+        
+        std::time_t now = std::time(nullptr);
+        commitData << "author User <user@git.com> " << now << " +0000\n";
+        commitData << "committer User <user@git.com> " << now << " +0000\n\n";
+        commitData << message << "\n";
+
+        std::string content = commitData.str();
+        std::string header = "commit " + std::to_string(content.size()) + '\0';
+        std::string store = header + content;
+        std::string commitSha = computeSHA1(store);
+
+        // 4. Write Commit Object
+        writeToFile(getObjectPath(commitSha), compressData(store));
+
+        // 5. Update HEAD (Move the branch pointer)
+        fs::path headPath = findGitRoot() / "HEAD";
+        std::string refPath = readFile(headPath).substr(5);
+        if (!refPath.empty() && refPath.back() == '\n') refPath.pop_back();
+        
+        writeToFile(findGitRoot() / refPath, commitSha);
+
+        std::cout << "[" << commitSha << "] " << message << std::endl;
+
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
     }
-    std::string message = argv[2];
-
-    // 1. Create Tree
-    std::string treeSha = createTree();
-    // 2. Get Parent
-    std::string parentSha = getParentCommit();
-
-    // 3. Build Commit Content
-    std::stringstream commitData;
-    commitData << "tree " << treeSha << "\n";
-    if (!parentSha.empty()) commitData << "parent " << parentSha << "\n";
-    
-    std::time_t now = std::time(nullptr);
-    commitData << "author User <user@git.com> " << now << " +0000\n";
-    commitData << "committer User <user@git.com> " << now << " +0000\n\n";
-    commitData << message << "\n";
-
-    std::string content = commitData.str();
-    std::string header = "commit " + std::to_string(content.size()) + '\0';
-    std::string store = header + content;
-    std::string commitSha = computeSHA1(store);
-
-    // 4. Write Commit Object
-    writeToFile(getObjectPath(commitSha), compressData(store));
-
-    // 5. Update HEAD (Move the branch pointer)
-    fs::path headPath = findGitRoot() / "HEAD";
-    std::string refPath = readFile(headPath).substr(5);
-    if (!refPath.empty() && refPath.back() == '\n') refPath.pop_back();
-    
-    writeToFile(findGitRoot() / refPath, commitSha);
-
-    std::cout << "[" << commitSha << "] " << message << std::endl;
 }

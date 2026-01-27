@@ -1,32 +1,28 @@
 #include "commands.h"
+#include "utils.h"
 #include <iostream>
-#include <filesystem> // C++17 standard library for file handling
+#include <filesystem>
 
 namespace fs = std::filesystem;
 
 void initRepository() {
-    // Check if .mygit already exists
+    // 1. Check if already exists
     if (fs::exists(".mygit")) {
-        std::cout << "Reinitialized existing MyGit repository in .mygit/" << std::endl;
+        std::cout << "Git repository already initialized." << std::endl;
         return;
     }
 
-    // Create the directory structure
+    // 2. Create Directory Structure
     try {
-        // 1. Create .mygit directory
-        if (fs::create_directory(".mygit")) {
-            // 2. Create subdirectories for objects and refs (future-proofing)
-            fs::create_directory(".mygit/objects");
-            fs::create_directory(".mygit/refs");
-            fs::create_directory(".mygit/refs/heads");
-
-            // 3. Create the HEAD file pointing to master
-            // (We will write file handling helpers later, keeping it simple for now)
-            std::cout << "Initialized empty MyGit repository in .mygit/" << std::endl;
-        } else {
-            std::cerr << "Error: Failed to create .mygit directory." << std::endl;
-        }
-    } catch (const fs::filesystem_error& e) {
-        std::cerr << "Filesystem error: " << e.what() << std::endl;
+        fs::create_directories(".mygit/objects");
+        fs::create_directories(".mygit/refs/heads");
+        
+        // 3. Create HEAD file (CRITICAL STEP)
+        // This points to the "main" branch by default
+        writeToFile(".mygit/HEAD", "ref: refs/heads/main\n");
+        
+        std::cout << "Initialized empty MyGit repository in " << fs::absolute(".mygit") << std::endl;
+    } catch (const std::exception& e) {
+        std::cerr << "Error initializing repository: " << e.what() << std::endl;
     }
 }
