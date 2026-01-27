@@ -1,9 +1,8 @@
 #ifndef COMMANDS_H
 #define COMMANDS_H
 
-#include <string>
-
-// Declaration of the init command
+// Helper function declarations
 void initRepository();
+void hashObject(int argc, char* argv[]);
 
 #endif
