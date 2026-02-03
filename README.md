@@ -4,7 +4,7 @@
 
 MyGit is a ground-up implementation of a content-addressable version control system, built to understand the internal architecture of Git. It replicates the core functionality of Git, including the object database (blobs, trees, commits), the staging area (index), and commit history traversal.
 
-## 🚀 Features
+##  Features
 
 * **Repository Initialization**: Creates the hidden `.mygit` directory structure.
 * **Object Database**: Stores compressed, content-addressable objects (SHA-1 + Zlib).
@@ -12,7 +12,7 @@ MyGit is a ground-up implementation of a content-addressable version control sys
 * **Commit History**: Creates immutable snapshots linked by parent pointers.
 * **Log Traversal**: Parses the linked list of commits to display history.
 
-## 🛠 Architecture
+##  Architecture
 
 MyGit mimics the data structures used by real Git.
 
@@ -32,7 +32,7 @@ A flat text file acting as the "Staging Area." It maps filenames to the SHA-1 ha
 
 A reference file that points to the current branch (e.g., `ref: refs/heads/main`), tracking the latest commit in the timeline.
 
-## 💻 Installation & Usage
+##  Installation & Usage
 
 ### Prerequisites
 
@@ -102,7 +102,7 @@ Inspect raw objects in the database.
 
 ```
 
-## 🧩 Project Structure
+##  Project Structure
 
 ```text
 .
@@ -119,7 +119,7 @@ Inspect raw objects in the database.
 
 ```
 
-## 🧠 What I Learned
+##  What I Learned
 
 * **Content-Addressable Storage**: How files can be stored by the hash of their content rather than their name.
 * **Data Structures**: Implementing Trees and Linked Lists using file pointers (SHA-1 hashes) instead of memory pointers.
